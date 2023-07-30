@@ -79,10 +79,8 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("hpehl")
-                        name.set("Harald Pehl")
-                        organization.set("Red Hat")
-                        organizationUrl.set("https://developers.redhat.com/")
+                        id.set("vexdev")
+                        name.set("Luca Vitucci")
                     }
                 }
                 scm {
