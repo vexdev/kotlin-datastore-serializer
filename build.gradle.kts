@@ -1,6 +1,6 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
-    kotlin("plugin.serialization") version "1.8.21"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     `java-library`
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
@@ -27,10 +27,10 @@ tasks.withType<Test>().configureEach {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(20)
 }
 
-version = "0.1.0"
+version = "0.1.1"
 group = "com.vexdev"
 
 java {
