@@ -27,10 +27,10 @@ tasks.withType<Test>().configureEach {
 }
 
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(11)
 }
 
-version = "0.1.1"
+version = "0.1.2"
 group = "com.vexdev"
 
 java {
