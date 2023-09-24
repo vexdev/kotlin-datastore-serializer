@@ -46,10 +46,14 @@ class CloudDecoder(
         return elementIndex++
     }
 
-    private fun getValue(): Value<*> = if (!isList) {
-        entity!!.getValue(elementName)
-    } else {
-        list!![elementIndex-1]
+    private fun getValue(): Value<*> {
+        return if (!isList) {
+            if (!entity!!.contains(elementName))
+                return NullValue.of()
+            entity.getValue(elementName)
+        } else {
+            list!![elementIndex - 1]
+        }
     }
 
     override fun decodeBoolean(): Boolean = (getValue() as BooleanValue).get()
