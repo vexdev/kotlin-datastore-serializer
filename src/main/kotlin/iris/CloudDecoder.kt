@@ -16,26 +16,34 @@ class CloudDecoder(
     val list: List<Value<*>>?,
     val elementCount: Int = 0,
     var elementName: String = "",
-    private val isRoot: Boolean = true,
+    private val isRoot: Boolean,
+    private val withKey: Boolean
 ) : AbstractDecoder() {
     private var elementIndex = 0
     private val isList = list != null
+    private var cloudKeyFound = 0
+    private var visitingKey = false
 
     override val serializersModule: SerializersModule = EmptySerializersModule()
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
-        if (isRoot)
-            return CloudDecoder(entity, null, descriptor.elementsCount, descriptor.getElementName(0), false)
+        if (isRoot) {
+            if (withKey) {
+                if (entity == null) throw IllegalStateException("Entity is null")
+                if (entity !is Entity) throw IllegalStateException("Must use a Entity (Not a FullEntity) to extract key")
+            }
+            return CloudDecoder(entity, null, descriptor.elementsCount, descriptor.getElementName(0), false, withKey)
+        }
 
         val element = getValue()
 
         if (element is ListValue) {
             val list = element.get()
-            return CloudDecoder(null, list, list.size, elementName, false)
+            return CloudDecoder(null, list, list.size, elementName, false, withKey)
         }
         if (element is EntityValue) {
             val entity = element.get()
-            return CloudDecoder(entity, null, entity.names.size, elementName, false)
+            return CloudDecoder(entity, null, entity.names.size, elementName, false, withKey)
         }
         throw IllegalStateException("Unknown element type")
     }
@@ -43,10 +51,22 @@ class CloudDecoder(
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         if (elementIndex == elementCount) return CompositeDecoder.DECODE_DONE
         elementName = descriptor.getElementName(elementIndex)
+        if (withKey && descriptor.getElementAnnotations(elementIndex).find { it is CloudKey } != null) {
+            cloudKeyFound++
+            if (cloudKeyFound > 1) throw IllegalStateException("Only one CloudKey is allowed")
+            visitingKey = true
+        }
         return elementIndex++
     }
 
     private fun getValue(): Value<*> {
+        if (visitingKey) {
+            visitingKey = false
+            if (entity !is Entity) throw IllegalStateException("Must use a Entity (Not a FullEntity) to extract key")
+            if (entity.key.hasName()) return StringValue.of(entity.key.name)
+            if (entity.key.hasId()) return LongValue.of(entity.key.id)
+            throw IllegalStateException("Key has no name or id")
+        }
         return if (!isList) {
             if (!entity!!.contains(elementName))
                 return NullValue.of()
@@ -82,8 +102,15 @@ class CloudDecoder(
 }
 
 fun <T> decodeFromEntity(entity: FullEntity<*>, deserializer: DeserializationStrategy<T>): T {
-    val decoder = CloudDecoder(entity, null)
+    val decoder = CloudDecoder(entity, null, isRoot = true, withKey = false)
+    return decoder.decodeSerializableValue(deserializer)
+}
+
+fun <T> decodeFromEntityKey(entity: Entity, deserializer: DeserializationStrategy<T>): T {
+    val decoder = CloudDecoder(entity, null, isRoot = true, withKey = true)
     return decoder.decodeSerializableValue(deserializer)
 }
 
 inline fun <reified T> decodeFromEntity(entity: FullEntity<*>): T = decodeFromEntity(entity, serializer())
+
+inline fun <reified T> decodeFromEntityKey(entity: Entity): T = decodeFromEntityKey(entity, serializer())

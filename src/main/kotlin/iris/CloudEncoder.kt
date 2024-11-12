@@ -16,21 +16,35 @@ import kotlinx.serialization.serializer
 @OptIn(ExperimentalSerializationApi::class)
 class CloudEncoder : AbstractEncoder() {
     lateinit var entityBuilder: FullEntity.Builder<IncompleteKey>
+    var keyName: String? = null
+    var keyId: Long? = null
+
+    private var cloudKeyCount = 0
+    private var cloudKey = false
     private var elementName = ""
     private val queue: MutableList<SerializationEnvironment> = mutableListOf()
     override val serializersModule: SerializersModule = EmptySerializersModule()
 
     override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
+        if (hasCloudKeyAnnotation(descriptor)) {
+            invalidCloudKey()
+        }
         queue.add(CollectionEnvironment(elementName, mutableListOf()))
         return this
     }
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
+        if (hasCloudKeyAnnotation(descriptor)) {
+            invalidCloudKey()
+        }
         queue.add(SerializableEnvironment(elementName, Entity.newBuilder()))
         return super.beginStructure(descriptor)
     }
 
     override fun endStructure(descriptor: SerialDescriptor) {
+        if (hasCloudKeyAnnotation(descriptor)) {
+            invalidCloudKey()
+        }
         val finishedEnv = queue.removeLast()
         if (queue.isEmpty()) {
             if (finishedEnv !is SerializableEnvironment)
@@ -66,11 +80,21 @@ class CloudEncoder : AbstractEncoder() {
     }
 
     override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        if (hasCloudKeyAnnotation(descriptor, index)) {
+            foundCloudKey()
+        }
         elementName = descriptor.getElementName(index)
         return super.encodeElement(descriptor, index)
     }
 
     private fun encodeValue(value: Value<*>) {
+        if (cloudKey) {
+            if (keyId == null && keyName == null) {
+                invalidCloudKey()
+            }
+            cloudKey = false
+            return // Do not add the value to the entity
+        }
         val env = queue.last()
         if (env is CollectionEnvironment)
             env.serializedElements.add(value)
@@ -107,6 +131,9 @@ class CloudEncoder : AbstractEncoder() {
     }
 
     override fun encodeLong(value: Long) {
+        if (cloudKey) {
+            keyId = value
+        }
         encodeValue(LongValue(value))
     }
 
@@ -115,6 +142,9 @@ class CloudEncoder : AbstractEncoder() {
     }
 
     override fun encodeString(value: String) {
+        if (cloudKey) {
+            keyName = value
+        }
         encodeValue(StringValue(value))
     }
 
@@ -125,6 +155,26 @@ class CloudEncoder : AbstractEncoder() {
     override fun encodeValue(value: Any) {
         throw NotImplementedError("encodeValue is not implemented as it is not used in serialization")
     }
+
+    private fun foundCloudKey() {
+        cloudKeyCount++
+        if (cloudKeyCount > 1) {
+            throw IllegalStateException("CloudKey can only be used once")
+        }
+        cloudKey = true
+    }
+
+    private fun hasCloudKeyAnnotation(serialDescriptor: SerialDescriptor, index: Int? = null): Boolean {
+        if (index == null) {
+            return serialDescriptor.annotations.any { it is CloudKey }
+        }
+        return serialDescriptor.getElementAnnotations(index).any { it is CloudKey }
+    }
+
+    private fun invalidCloudKey() {
+        throw IllegalStateException("$elementName is not a valid Key. CloudKey can only be used with a String keyName or Long keyId")
+    }
+
 }
 
 sealed interface SerializationEnvironment
@@ -145,4 +195,21 @@ fun <T> encodeToEntity(serializer: SerializationStrategy<T>, value: T): FullEnti
     return encoder.entityBuilder
 }
 
+fun <T> encodeToEntityKey(
+    serializer: SerializationStrategy<T>,
+    value: T,
+    keyFactory: KeyFactory
+): Entity.Builder {
+    val encoder = CloudEncoder()
+    encoder.encodeSerializableValue(serializer, value)
+    if (encoder.keyId == null && encoder.keyName == null) {
+        throw IllegalStateException("Key not found")
+    }
+    val key: Key = encoder.keyName?.let { keyFactory.newKey(it) } ?: keyFactory.newKey(encoder.keyId!!)
+    return Entity.newBuilder(key, encoder.entityBuilder.build())
+}
+
 inline fun <reified T> encodeToEntity(value: T) = encodeToEntity(serializer(), value)
+
+inline fun <reified T> encodeToEntityKey(value: T, keyFactory: KeyFactory) =
+    encodeToEntityKey(serializer(), value, keyFactory)

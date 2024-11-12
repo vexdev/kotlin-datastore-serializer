@@ -1,10 +1,15 @@
 package iris
 
 import com.google.cloud.datastore.*
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import iris.BooleanMock.Companion.BOOLEAN_MOCK
 import iris.BooleanMock.Companion.BOOLEAN_MOCK_ENTITY
+import iris.BooleanMockWithKey.Companion.BOOLEAN_MOCK_KEY
+import iris.BooleanMockWithKey.Companion.BOOLEAN_MOCK_KEY_ENTITY
+import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY
+import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY_ENTITY
 import iris.ComplexMock.Companion.COMPLEX_MOCK
 import iris.ComplexMock.Companion.COMPLEX_MOCK_ENTITY
 import kotlinx.serialization.Serializable
@@ -18,6 +23,34 @@ class CloudEncoderTest : FunSpec({
         test("complex case") {
             encodeToEntity(COMPLEX_MOCK).build() entityEquals COMPLEX_MOCK_ENTITY.build()
         }
+        test("boolean with key case") {
+            val kf = KeyFactory("project").apply { setKind("KIND") }
+            val actual = encodeToEntityKey(BOOLEAN_MOCK_KEY, kf).build()
+            val expected = BOOLEAN_MOCK_KEY_ENTITY.build()
+            actual entityEquals expected
+            actual.key.id shouldBe expected.key.id
+            actual.key.name shouldBe expected.key.name
+        }
+        test("invalid placement of cloud key") {
+            val kf = KeyFactory("project").apply { setKind("KIND") }
+            shouldThrow<IllegalStateException> {
+                encodeToEntityKey(InvalidPlacementOfCloudKey(1), kf).build()
+            }
+        }
+        test("invalid double cloud key") {
+            val kf = KeyFactory("project").apply { setKind("KIND") }
+            shouldThrow<IllegalStateException> {
+                encodeToEntityKey(InvalidDoubleCloudKey("key", 1), kf).build()
+            }
+        }
+        test("boolean with long key case") {
+            val kf = KeyFactory("project").apply { setKind("KIND") }
+            val actual = encodeToEntityKey(BOOLEAN_MOCK_LONG_KEY, kf).build()
+            val expected = BOOLEAN_MOCK_LONG_KEY_ENTITY.build()
+            actual entityEquals expected
+            actual.key.id shouldBe expected.key.id
+            actual.key.name shouldBe expected.key.name
+        }
     }
 
 })
@@ -29,6 +62,47 @@ data class BooleanMock(val value: Boolean) {
     companion object {
         val BOOLEAN_MOCK = BooleanMock(true)
         val BOOLEAN_MOCK_ENTITY: FullEntity.Builder<IncompleteKey> = Entity.newBuilder().set("value", true)
+    }
+}
+
+@Serializable
+data class InvalidPlacementOfCloudKey(
+    @CloudKey
+    val key: Int
+)
+
+@Serializable
+data class InvalidDoubleCloudKey(
+    @CloudKey
+    val key: String,
+    @CloudKey
+    val key2: Long
+)
+
+@Serializable
+data class BooleanMockWithKey(
+    val value: Boolean,
+    @CloudKey
+    val key: String
+) {
+    companion object {
+        val BOOLEAN_MOCK_KEY_KEY = Key.newBuilder("project", "KIND", "keyValue00").build()
+        val BOOLEAN_MOCK_KEY = BooleanMockWithKey(true, "keyValue00")
+        val BOOLEAN_MOCK_KEY_ENTITY: Entity.Builder = Entity.newBuilder(BOOLEAN_MOCK_KEY_KEY).set("value", true)
+    }
+}
+
+@Serializable
+data class BooleanMockWithLongKey(
+    val value: Boolean,
+    @CloudKey
+    val key: Long
+) {
+    companion object {
+        val BOOLEAN_MOCK_LONG_KEY_KEY = Key.newBuilder("project", "KIND", null).setId(155L).build()
+        val BOOLEAN_MOCK_LONG_KEY = BooleanMockWithLongKey(true, 155L)
+        val BOOLEAN_MOCK_LONG_KEY_ENTITY: Entity.Builder =
+            Entity.newBuilder(BOOLEAN_MOCK_LONG_KEY_KEY).set("value", true)
     }
 }
 
