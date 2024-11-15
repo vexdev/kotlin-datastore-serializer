@@ -189,13 +189,16 @@ data class CollectionEnvironment(
     val serializedElements: MutableList<Value<*>>
 ) : SerializationEnvironment
 
-fun <T> encodeToEntity(serializer: SerializationStrategy<T>, value: T): FullEntity.Builder<IncompleteKey> {
+fun <T> encodeToEntity(
+    serializer: SerializationStrategy<T>,
+    value: T,
+): FullEntity.Builder<IncompleteKey> {
     val encoder = CloudEncoder()
     encoder.encodeSerializableValue(serializer, value)
     return encoder.entityBuilder
 }
 
-fun <T> encodeToEntityKey(
+fun <T> encodeToEntity(
     serializer: SerializationStrategy<T>,
     value: T,
     keyFactory: KeyFactory
@@ -211,5 +214,5 @@ fun <T> encodeToEntityKey(
 
 inline fun <reified T> encodeToEntity(value: T) = encodeToEntity(serializer(), value)
 
-inline fun <reified T> encodeToEntityKey(value: T, keyFactory: KeyFactory) =
-    encodeToEntityKey(serializer(), value, keyFactory)
+inline fun <reified T> encodeToEntity(value: T, keyFactory: KeyFactory) =
+    encodeToEntity(serializer(), value, keyFactory)
