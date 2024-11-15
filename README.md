@@ -10,7 +10,7 @@ Add the following to your `build.gradle` file:
 repositories {
     mavenCentral()
 }
-implementation("com.vexdev:kotlin-datastore-serializer:0.1.2")
+implementation("com.vexdev:kotlin-datastore-serializer:0.2.0")
 ```
 
 Then, you can use the Serializer to convert your data classes to entities:
