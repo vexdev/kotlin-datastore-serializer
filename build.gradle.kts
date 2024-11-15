@@ -41,10 +41,8 @@ java {
 signing {
     val signingKey = providers
         .environmentVariable("GPG_SIGNING_KEY")
-        .forUseAtConfigurationTime()
     val signingPassphrase = providers
         .environmentVariable("GPG_SIGNING_PASSPHRASE")
-        .forUseAtConfigurationTime()
     if (signingKey.isPresent && signingPassphrase.isPresent) {
         useInMemoryPgpKeys(signingKey.get(), signingPassphrase.get())
         val extension = extensions
