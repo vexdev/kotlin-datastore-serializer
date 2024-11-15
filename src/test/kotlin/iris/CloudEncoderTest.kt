@@ -25,7 +25,7 @@ class CloudEncoderTest : FunSpec({
         }
         test("boolean with key case") {
             val kf = KeyFactory("project").apply { setKind("KIND") }
-            val actual = encodeToEntityKey(BOOLEAN_MOCK_KEY, kf).build()
+            val actual = encodeToEntity(BOOLEAN_MOCK_KEY, kf).build()
             val expected = BOOLEAN_MOCK_KEY_ENTITY.build()
             actual entityEquals expected
             actual.key.id shouldBe expected.key.id
@@ -34,18 +34,18 @@ class CloudEncoderTest : FunSpec({
         test("invalid placement of cloud key") {
             val kf = KeyFactory("project").apply { setKind("KIND") }
             shouldThrow<IllegalStateException> {
-                encodeToEntityKey(InvalidPlacementOfCloudKey(1), kf).build()
+                encodeToEntity(InvalidPlacementOfCloudKey(1), kf).build()
             }
         }
         test("invalid double cloud key") {
             val kf = KeyFactory("project").apply { setKind("KIND") }
             shouldThrow<IllegalStateException> {
-                encodeToEntityKey(InvalidDoubleCloudKey("key", 1), kf).build()
+                encodeToEntity(InvalidDoubleCloudKey("key", 1), kf).build()
             }
         }
         test("boolean with long key case") {
             val kf = KeyFactory("project").apply { setKind("KIND") }
-            val actual = encodeToEntityKey(BOOLEAN_MOCK_LONG_KEY, kf).build()
+            val actual = encodeToEntity(BOOLEAN_MOCK_LONG_KEY, kf).build()
             val expected = BOOLEAN_MOCK_LONG_KEY_ENTITY.build()
             actual entityEquals expected
             actual.key.id shouldBe expected.key.id

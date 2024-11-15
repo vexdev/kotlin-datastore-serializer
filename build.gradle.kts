@@ -1,9 +1,9 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
+    id("org.jetbrains.kotlin.jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
     `java-library`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     signing
 }
 
@@ -14,12 +14,12 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation(platform("com.google.cloud:libraries-bom:26.21.0"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation(platform("com.google.cloud:libraries-bom:26.50.0"))
     implementation("com.google.cloud:google-cloud-datastore")
-    testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
-    testImplementation("io.kotest:kotest-assertions-core:5.6.2")
-    testImplementation("io.kotest:kotest-framework-datatest:5.6.2")
+    testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+    testImplementation("io.kotest:kotest-framework-datatest:5.9.1")
 }
 
 tasks.withType<Test>().configureEach {
@@ -30,7 +30,7 @@ kotlin {
     jvmToolchain(11)
 }
 
-version = "0.1.3"
+version = "0.2.0"
 group = "com.vexdev"
 
 java {

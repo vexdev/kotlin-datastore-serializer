@@ -19,13 +19,13 @@ class CloudDecoderTest : FunSpec({
             decodeFromEntity<BooleanMock>(BOOLEAN_MOCK_ENTITY.build()) shouldBeEqualToComparingFields BOOLEAN_MOCK
         }
         test("boolean case with key") {
-            val actual = decodeFromEntityKey<BooleanMockWithKey>(BOOLEAN_MOCK_KEY_ENTITY.build())
+            val actual = decodeFromEntity<BooleanMockWithKey>(BOOLEAN_MOCK_KEY_ENTITY.build())
             val expected = BOOLEAN_MOCK_KEY
             actual shouldBeEqualToComparingFields expected
             actual.key shouldBeEqual expected.key
         }
         test("boolean case with long key") {
-            val actual = decodeFromEntityKey<BooleanMockWithLongKey>(BOOLEAN_MOCK_LONG_KEY_ENTITY.build())
+            val actual = decodeFromEntity<BooleanMockWithLongKey>(BOOLEAN_MOCK_LONG_KEY_ENTITY.build())
             val expected = BOOLEAN_MOCK_LONG_KEY
             actual shouldBeEqualToComparingFields expected
             actual.key shouldBeEqual expected.key
