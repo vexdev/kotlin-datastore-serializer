@@ -1,6 +1,12 @@
-_# kotlin-datastore-serializer
+# kotlin-datastore-serializer
 
-Kotlin Serializer for the Google Cloud Datastore
+Kotlin Serializer for the Google Cloud Datastore, based on kotlinx.serialization.
+
+## Features
+
+- Encode data classes to entities
+- Decode entities to data classes
+- Support for encoding and decoding key names `String` or key ids `Long`
 
 ## Usage
 
@@ -58,4 +64,4 @@ To release a new version, run the following command:
 
 ```bash
 ./gradlew publish closeAndReleaseStagingRepository
-```_ 
+```
