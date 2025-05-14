@@ -1,6 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("plugin.serialization") version "2.1.21"
     `java-library`
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
