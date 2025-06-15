@@ -38,8 +38,8 @@ val dataClass = decodeFromEntity<MyDataClass>(entity)
 
 ### `@CloudKey`
 
-The `@CloudKey` annotation is used to mark a property in a data class that represents the key of an entity in 
-Google Cloud Datastore. Only one property in a data class can be annotated with `@CloudKey`. 
+The `@CloudKey` annotation is used to mark a property in a data class that represents the key of an entity in
+Google Cloud Datastore. Only one property in a data class can be annotated with `@CloudKey`.
 If more than one property is annotated, an `IllegalStateException` will be thrown during decoding.
 
 Only `String` or `Long` properties can be annotated with `@CloudKey`. If a property of any other type is annotated,
@@ -54,6 +54,22 @@ Example usage:
 @Serializable
 data class MyDataClass(
     @CloudKey val id: String,
+    val value: String
+)
+```
+
+### `@StrictDeserialization`
+
+The `@StrictDeserialization` annotation is used to enforce strict deserialization of entities.
+When this annotation is applied to a data class, any properties that are not present in the entity will cause a
+SerializationException to be thrown during decoding.
+
+Example usage:
+
+```kotlin
+@Serializable
+@StrictDeserialization
+data class MyDataClass(
     val value: String
 )
 ```
