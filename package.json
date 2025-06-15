@@ -17,7 +17,7 @@
               "files": [
                 "build.gradle.kts"
               ],
-              "from": "xxx[.]xxx[x]xxx",
+              "from": "xxx[.]xxx[.]xxx",
               "to": "${nextRelease.version}",
               "countMatches": true,
               "results": [
