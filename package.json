@@ -40,7 +40,9 @@
     "@semantic-release/git": "latest",
     "@semantic-release/github": "latest",
     "@semantic-release/release-notes-generator": "latest",
-    "semantic-release": "latest",
     "semantic-release-replace-plugin": "latest"
+  },
+  "devDependencies": {
+    "semantic-release": "^24.2.5"
   }
 }
