@@ -1,0 +1,46 @@
+{
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github",
+      "@semantic-release/git",
+      "@semantic-release/changelog",
+      [
+        "semantic-release-replace-plugin",
+        {
+          "replacements": [
+            {
+              "files": [
+                "build.gradle.kts"
+              ],
+              "from": "xxx[.]xxx[x]xxx",
+              "to": "${nextRelease.version}",
+              "countMatches": true,
+              "results": [
+                {
+                  "file": "build.gradle.kts",
+                  "hasChanged": true,
+                  "numMatches": 1,
+                  "numReplacements": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "@semantic-release/changelog": "latest",
+    "@semantic-release/commit-analyzer": "latest",
+    "@semantic-release/git": "latest",
+    "@semantic-release/github": "latest",
+    "@semantic-release/release-notes-generator": "latest",
+    "semantic-release": "latest",
+    "semantic-release-replace-plugin": "latest"
+  }
+}

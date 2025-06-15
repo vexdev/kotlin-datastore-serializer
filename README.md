@@ -1,4 +1,5 @@
 # kotlin-datastore-serializer
+![Maven latest release (latest semver)](https://img.shields.io/maven-central/v/com.vexdev/kotlin-datastore-serializer)
 
 Kotlin Serializer for the Google Cloud Datastore, based on kotlinx.serialization.
 
@@ -16,7 +17,10 @@ Add the following to your `build.gradle` file:
 repositories {
     mavenCentral()
 }
-implementation("com.vexdev:kotlin-datastore-serializer:0.2.0")
+implementation("com.vexdev:kotlin-datastore-serializer:x.y.z") // Replace with the latest version from tags
+```
+
+Then, you can use the Serializer to convert your data classes to entities and vice versa.
 ```
 
 Then, you can use the Serializer to convert your data classes to entities:
@@ -76,8 +80,20 @@ data class MyDataClass(
 
 ## Releasing
 
+Ensure you have the necessary environment variables set up for publishing to Maven Central.
+```properties
+ORG_GRADLE_PROJECT_mavenCentralUsername=username
+ORG_GRADLE_PROJECT_mavenCentralPassword=the_password
+
+ORG_GRADLE_PROJECT_signingInMemoryKey=exported_ascii_armored_key
+# Optional
+ORG_GRADLE_PROJECT_signingInMemoryKeyId=12345678
+# If key was created with a password.
+ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=some_password
+```
+
 To release a new version, run the following command:
 
 ```bash
-./gradlew publish closeAndReleaseStagingRepository
+./gradlew publishAndReleaseToMavenCentral
 ```
