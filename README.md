@@ -79,8 +79,15 @@ data class MyDataClass(
 )
 ```
 
-#### GeoPoint
-GeoPoint support is provided out of the box making use of the class `iris.GeoPoint`.
+#### LatLng
+To use `LatLng` with the serializer, you need to explicitly use the `LatLngSerializer` from `iris`:
+
+```kotlin
+data class MyDataClass(
+    @Serializable(with = LatLngSerializer::class)
+    val location: LatLng
+)
+```
 
 ## Annotations
 

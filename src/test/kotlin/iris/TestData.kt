@@ -22,7 +22,6 @@ import iris.BooleanMock.Companion.BOOLEAN_MOCK
 import iris.BooleanMock.Companion.BOOLEAN_MOCK_ENTITY
 import iris.ComplexMock.Companion.COMPLEX_MOCK
 import iris.ComplexMock.Companion.COMPLEX_MOCK_ENTITY
-import iris.model.GeoPoint
 import kotlinx.serialization.Serializable
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -77,19 +76,20 @@ data class BooleanMockWithLongKey(
 }
 
 @Serializable
-data class ContainsGeoPoint(
-    val value: GeoPoint,
-    val nullable: GeoPoint?,
-    val nullableFilled: GeoPoint?,
-    val nullableWithDefault: GeoPoint = GeoPoint(latitude = 6.0, longitude = 7.0)
+data class ContainsLatLng(
+    @Serializable(with = LatLngSerializer::class)
+    val value: LatLng,
+    @Serializable(with = LatLngSerializer::class)
+    val nullable: LatLng?,
+    @Serializable(with = LatLngSerializer::class)
+    val nullableFilled: LatLng?,
+    @Serializable(with = LatLngSerializer::class)
+    val nullableWithDefault: LatLng = LatLng.of(6.0, 7.0)
 ) {
     companion object {
         val CONTAINS_GEOPOINT =
-            ContainsGeoPoint(
-                value = GeoPoint(latitude = 1.0, longitude = 2.0), nullable = null, nullableFilled = GeoPoint(
-                    latitude = 3.0,
-                    longitude = 4.0
-                )
+            ContainsLatLng(
+                value = LatLng.of(1.0, 2.0), nullable = null, nullableFilled = LatLng.of(3.0, 4.0)
             )
         val CONTAINS_GEOPOINT_ENTITY: FullEntity.Builder<IncompleteKey> = Entity.newBuilder()
             .set("value", LatLngValue.of(LatLng.of(1.0, 2.0)))
@@ -174,7 +174,8 @@ data class ComplexMock(
     val nullableStringArray: Array<String?>,
     val stringSet: Set<String>,
     val nullableStringSet: Set<String?>,
-    val geoPoint: GeoPoint,
+    @Serializable(with = LatLngSerializer::class)
+    val geoPoint: LatLng,
     @Serializable(with = InstantSerializer::class)
     val timestamp: Instant,
 ) {
@@ -210,7 +211,7 @@ data class ComplexMock(
             nullableStringArray = arrayOf("a", null),
             stringSet = setOf("a"),
             nullableStringSet = setOf("a", null),
-            geoPoint = GeoPoint(latitude = 1.0, longitude = 2.0),
+            geoPoint = LatLng.of(1.0, 2.0),
             timestamp = Instant.fromEpochSeconds(123456, 0) // Example timestamp
         )
         val COMPLEX_MOCK_ENTITY: FullEntity.Builder<IncompleteKey> = Entity.newBuilder()

@@ -2,7 +2,6 @@ package iris
 
 import com.google.cloud.Timestamp
 import com.google.cloud.datastore.*
-import iris.model.GeoPoint
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -160,7 +159,7 @@ class CloudEncoder : AbstractEncoder() {
         throw NotImplementedError("encodeValue is not implemented as it is not used in serialization")
     }
 
-    internal fun encodeGeoPoint(value: GeoPoint) {
+    internal fun encodeLatLng(value: LatLng) {
         val env = requireSerializableEnvironment()
         env.entityBuilder.set(
             elementName,

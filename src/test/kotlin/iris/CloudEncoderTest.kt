@@ -52,8 +52,8 @@ class CloudEncoderTest : FunSpec({
             actual.key.name shouldBe expected.key.name
         }
         test("contains GeoPoint") {
-            val actual = encodeToEntity(ContainsGeoPoint.CONTAINS_GEOPOINT).build()
-            val expected = ContainsGeoPoint.CONTAINS_GEOPOINT_ENTITY.build()
+            val actual = encodeToEntity(ContainsLatLng.CONTAINS_GEOPOINT).build()
+            val expected = ContainsLatLng.CONTAINS_GEOPOINT_ENTITY.build()
             actual entityEquals expected
         }
         test("nested mock") {

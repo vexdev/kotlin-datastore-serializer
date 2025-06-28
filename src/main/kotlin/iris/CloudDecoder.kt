@@ -1,8 +1,6 @@
 package iris
 
-import com.google.cloud.Timestamp
 import com.google.cloud.datastore.*
-import iris.model.GeoPoint
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -136,14 +134,11 @@ class CloudDecoder(
 
     override fun decodeString(): String = (getValue() as StringValue).get()
 
-    internal fun decodeGeoPoint(): GeoPoint {
+    internal fun decodeLatLng(): LatLng {
         val entity = requireEntity()
         val value = entity.getValue<LatLngValue>(elementName)
         return value.get().let {
-            GeoPoint(
-                latitude = it.latitude,
-                longitude = it.longitude
-            )
+            LatLng.of(it.latitude, it.longitude)
         }
     }
 

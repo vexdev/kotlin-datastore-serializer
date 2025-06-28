@@ -12,7 +12,6 @@ import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY
 import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY_ENTITY
 import iris.ComplexMock.Companion.COMPLEX_MOCK
 import iris.ComplexMock.Companion.COMPLEX_MOCK_ENTITY
-import iris.model.GeoPoint
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.junit.jupiter.api.assertThrows
@@ -36,9 +35,9 @@ class CloudDecoderTest : FunSpec({
             actual.key shouldBeEqual expected.key
         }
         test("geopoint case") {
-            val entity = ContainsGeoPoint.CONTAINS_GEOPOINT_ENTITY.build()
-            val decoded = decodeFromEntity<ContainsGeoPoint>(entity)
-            decoded shouldBeEqualToComparingFields ContainsGeoPoint.CONTAINS_GEOPOINT
+            val entity = ContainsLatLng.CONTAINS_GEOPOINT_ENTITY.build()
+            val decoded = decodeFromEntity<ContainsLatLng>(entity)
+            decoded shouldBeEqualToComparingFields ContainsLatLng.CONTAINS_GEOPOINT
         }
         test("complex case") {
             decodeFromEntity<ComplexMock>(COMPLEX_MOCK_ENTITY.build()) shouldBeEqualToComparingFields COMPLEX_MOCK
