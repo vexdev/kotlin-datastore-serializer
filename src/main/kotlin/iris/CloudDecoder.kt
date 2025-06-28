@@ -1,6 +1,8 @@
 package iris
 
+import com.google.cloud.Timestamp
 import com.google.cloud.datastore.*
+import iris.model.GeoPoint
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -11,6 +13,8 @@ import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import kotlin.math.max
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalSerializationApi::class)
 class CloudDecoder(
@@ -131,6 +135,31 @@ class CloudDecoder(
     override fun decodeShort(): Short = (getValue() as LongValue).get().toShort()
 
     override fun decodeString(): String = (getValue() as StringValue).get()
+
+    internal fun decodeGeoPoint(): GeoPoint {
+        val entity = requireEntity()
+        val value = entity.getValue<LatLngValue>(elementName)
+        return value.get().let {
+            GeoPoint(
+                latitude = it.latitude,
+                longitude = it.longitude
+            )
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    internal fun decodeInstant(): Instant {
+        val entity = requireEntity()
+        val value = entity.getValue<TimestampValue>(elementName).get()
+        return Instant.fromEpochSeconds(value.seconds, max(value.nanos, 0))
+    }
+
+    private fun requireEntity(): FullEntity<*> {
+        if (entity == null) {
+            throw SerializationException("InstantSerializer can only be used with CloudDecoder that has an entity")
+        }
+        return entity
+    }
 
 }
 

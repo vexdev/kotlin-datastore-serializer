@@ -1,6 +1,8 @@
 package iris
 
+import com.google.cloud.Timestamp
 import com.google.cloud.datastore.*
+import iris.model.GeoPoint
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -9,6 +11,8 @@ import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * A [CompositeEncoder] that encodes to a [FullEntity.Builder].
@@ -154,6 +158,30 @@ class CloudEncoder : AbstractEncoder() {
 
     override fun encodeValue(value: Any) {
         throw NotImplementedError("encodeValue is not implemented as it is not used in serialization")
+    }
+
+    internal fun encodeGeoPoint(value: GeoPoint) {
+        val env = requireSerializableEnvironment()
+        env.entityBuilder.set(
+            elementName,
+            LatLngValue.of(LatLng.of(value.latitude, value.longitude))
+        )
+    }
+
+    @OptIn(ExperimentalTime::class)
+    internal fun encodeInstant(value: Instant) {
+        val env = requireSerializableEnvironment()
+        env.entityBuilder.set(
+            elementName,
+            TimestampValue.of(Timestamp.ofTimeSecondsAndNanos(value.epochSeconds, value.nanosecondsOfSecond))
+        )
+    }
+
+    private fun requireSerializableEnvironment(): SerializableEnvironment {
+        if (queue.isEmpty() || queue.last() !is SerializableEnvironment) {
+            throw IllegalStateException("SerializableEnvironment is required for this operation")
+        }
+        return queue.last() as SerializableEnvironment
     }
 
     private fun foundCloudKey() {

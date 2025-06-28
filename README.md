@@ -38,6 +38,39 @@ Or your entities to data classes:
 val dataClass = decodeFromEntity<MyDataClass>(entity)
 ```
 
+## Type mapping
+The serializes maps the following types to Google Cloud Datastore types:
+- `Boolean` to `BooleanValue`
+- `Byte` to `LongValue`
+- `Char` to `LongValue`
+- `Double` to `DoubleValue`
+- `Enum` to `StringValue`
+- `Float` to `DoubleValue`
+- `Int` to `LongValue`
+- `Long` to `LongValue`
+- `Short` to `LongValue`
+- `String` to `StringValue`
+- `Instant` to `TimestampValue` (When using InstantSerializer)
+- `iris.GeoPoint` to `LatLngValue`
+- `Map<String, Any>` to `ArrayValue` (With the standard kotlin serialization)
+- `List<Serializable>` to `ArrayValue`
+- `Serializable` data classes to `EntityValue`
+
+### Special types
+
+#### Instant
+To use `Instant` with the serializer, you need to explicitly use the `InstantSerializer` from `iris`:
+
+```kotlin
+data class MyDataClass(
+    @Serializable(with = InstantSerializer::class)
+    val timestamp: Instant
+)
+``` 
+
+#### GeoPoint
+GeoPoint support is provided out of the box making use of the class `iris.GeoPoint`.
+
 ## Annotations
 
 ### `@CloudKey`

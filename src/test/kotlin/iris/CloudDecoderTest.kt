@@ -12,6 +12,7 @@ import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY
 import iris.BooleanMockWithLongKey.Companion.BOOLEAN_MOCK_LONG_KEY_ENTITY
 import iris.ComplexMock.Companion.COMPLEX_MOCK
 import iris.ComplexMock.Companion.COMPLEX_MOCK_ENTITY
+import iris.model.GeoPoint
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import org.junit.jupiter.api.assertThrows
@@ -34,8 +35,23 @@ class CloudDecoderTest : FunSpec({
             actual shouldBeEqualToComparingFields expected
             actual.key shouldBeEqual expected.key
         }
+        test("geopoint case") {
+            val entity = ContainsGeoPoint.CONTAINS_GEOPOINT_ENTITY.build()
+            val decoded = decodeFromEntity<ContainsGeoPoint>(entity)
+            decoded shouldBeEqualToComparingFields ContainsGeoPoint.CONTAINS_GEOPOINT
+        }
         test("complex case") {
             decodeFromEntity<ComplexMock>(COMPLEX_MOCK_ENTITY.build()) shouldBeEqualToComparingFields COMPLEX_MOCK
+        }
+        test("nested mock") {
+            val entity = NestedMock.NESTED_MOCK_ENTITY.build()
+            val decoded = decodeFromEntity<NestedMock>(entity)
+            decoded shouldBeEqualToComparingFields NestedMock.NESTED_MOCK
+        }
+        test("map mock") {
+            val entity = MapMock.MAP_MOCK_ENTITY.build()
+            val decoded = decodeFromEntity<MapMock>(entity)
+            decoded shouldBeEqualToComparingFields MapMock.MAP_MOCK
         }
         test("class has more keys than entity") {
             // Simulates the case where the class has a new key which is not present in the entity
