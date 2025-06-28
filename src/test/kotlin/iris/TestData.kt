@@ -10,6 +10,7 @@ import com.google.cloud.datastore.EntityValue
 import com.google.cloud.datastore.FullEntity
 import com.google.cloud.datastore.IncompleteKey
 import com.google.cloud.datastore.Key
+import com.google.cloud.datastore.KeyValue
 import com.google.cloud.datastore.LatLng
 import com.google.cloud.datastore.LatLngValue
 import com.google.cloud.datastore.ListValue
@@ -106,6 +107,38 @@ data class MapMock(
         val MAP_MOCK = MapMock(mapOf("key" to "value"))
         val MAP_MOCK_ENTITY: FullEntity.Builder<IncompleteKey> = Entity.newBuilder()
             .set("map", ListValue(StringValue("key"), StringValue("value")))
+    }
+}
+
+@Serializable
+data class NestedKey(
+    @Serializable(with = KeySerializer::class)
+    val key: Key
+)
+
+@Serializable
+data class KeyRefMock(
+    @CloudKey
+    val id: String,
+    @Serializable(with = KeySerializer::class)
+    val remoteId: Key,
+    val nestedKey: NestedKey
+) {
+    companion object {
+        val KEY_REF_KEY = Key.newBuilder("project", "KIND", null).setName("CIAO").build()
+        val KEY_REF_MOCK = KeyRefMock(
+            "CIAO", Key.newBuilder("project", "KIND", "keyValue00").build(),
+            NestedKey(Key.newBuilder("project", "KIND", "nestedKey").build())
+        )
+        val KEY_REF_MOCK_ENTITY: Entity.Builder = Entity.newBuilder(KEY_REF_KEY)
+            .set("remoteId", KeyValue.of(KEY_REF_MOCK.remoteId))
+            .set(
+                "nestedKey", EntityValue(
+                    Entity.newBuilder()
+                        .set("key", KeyValue.of(KEY_REF_MOCK.nestedKey.key))
+                        .build()
+                )
+            )
     }
 }
 

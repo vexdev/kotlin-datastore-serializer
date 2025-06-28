@@ -154,6 +154,12 @@ class CloudDecoder(
         return Instant.fromEpochSeconds(value.seconds, max(value.nanos, 0))
     }
 
+    fun decodeKey(): Key {
+        val entity = requireEntity()
+        val value = entity.getValue<KeyValue>(elementName).get()
+        return value
+    }
+
     private fun requireEntity(): FullEntity<*> {
         if (entity == null) {
             throw SerializationException("InstantSerializer can only be used with CloudDecoder that has an entity")

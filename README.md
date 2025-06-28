@@ -55,6 +55,7 @@ The serializes maps the following types to Google Cloud Datastore types:
 - `Map<String, Any>` to `ArrayValue` (With the standard kotlin serialization)
 - `List<Serializable>` to `ArrayValue`
 - `Serializable` data classes to `EntityValue`
+- `Key` to `KeyValue` (When using KeySerializer)
 
 ### Special types
 
@@ -68,6 +69,16 @@ data class MyDataClass(
 )
 ``` 
 
+#### Key
+To use `Key` with the serializer, you need to explicitly use the `KeySerializer` from `iris`:
+
+```kotlin
+data class MyDataClass(
+    @Serializable(with = KeySerializer::class)
+    val key: Key
+)
+```
+
 #### GeoPoint
 GeoPoint support is provided out of the box making use of the class `iris.GeoPoint`.
 
@@ -75,7 +86,7 @@ GeoPoint support is provided out of the box making use of the class `iris.GeoPoi
 
 ### `@CloudKey`
 
-The `@CloudKey` annotation is used to mark a property in a data class that represents the key of an entity in
+The `@CloudKey` annotation is used to mark a property in a data class that represents the key of the entity in
 Google Cloud Datastore. Only one property in a data class can be annotated with `@CloudKey`.
 If more than one property is annotated, an `IllegalStateException` will be thrown during decoding.
 
@@ -91,6 +102,21 @@ Example usage:
 @Serializable
 data class MyDataClass(
     @CloudKey val id: String,
+    val value: String
+)
+```
+
+note: this differs from using the `Key` class with the `KeySerializer` from `iris`, because this annotation is used
+to define the key of the entity in the data class, while the `KeySerializer` is used to serialize and deserialize
+properties of type `Key`.
+
+Example of an entity with both `@CloudKey` and `KeySerializer`:
+
+```kotlin
+@Serializable
+data class MyDataClass(
+    @CloudKey val id: String, // This is the entity key
+    @Serializable(with = KeySerializer::class) val key: Key, // Reference to another entity
     val value: String
 )
 ```

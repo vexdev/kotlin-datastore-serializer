@@ -66,6 +66,11 @@ class CloudEncoderTest : FunSpec({
             val expectedEntity = MapMock.MAP_MOCK_ENTITY.build()
             entity entityEquals expectedEntity
         }
+        test("key ref mock") {
+            val entity = encodeToEntity(KeyRefMock.KEY_REF_MOCK).build()
+            val expectedEntity = KeyRefMock.KEY_REF_MOCK_ENTITY.build()
+            entity entityEquals expectedEntity
+        }
     }
 
 })

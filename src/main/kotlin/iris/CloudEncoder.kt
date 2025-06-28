@@ -177,6 +177,14 @@ class CloudEncoder : AbstractEncoder() {
         )
     }
 
+    fun encodeKey(value: Key) {
+        val env = requireSerializableEnvironment()
+        env.entityBuilder.set(
+            elementName,
+            KeyValue.of(value)
+        )
+    }
+
     private fun requireSerializableEnvironment(): SerializableEnvironment {
         if (queue.isEmpty() || queue.last() !is SerializableEnvironment) {
             throw IllegalStateException("SerializableEnvironment is required for this operation")

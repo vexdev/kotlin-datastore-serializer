@@ -53,6 +53,11 @@ class CloudDecoderTest : FunSpec({
             val decoded = decodeFromEntity<MapMock>(entity)
             decoded shouldBeEqualToComparingFields MapMock.MAP_MOCK
         }
+        test("key ref mock") {
+            val entity = KeyRefMock.KEY_REF_MOCK_ENTITY.build()
+            val decoded = decodeFromEntity<KeyRefMock>(entity)
+            decoded shouldBeEqualToComparingFields KeyRefMock.KEY_REF_MOCK
+        }
         test("class has more keys than entity") {
             // Simulates the case where the class has a new key which is not present in the entity
             // E.G. when the class is a new version and the entity is an old version.
