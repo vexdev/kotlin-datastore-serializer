@@ -6,7 +6,7 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-internal class GeoPointSerializer : KSerializer<GeoPoint> {
+class GeoPointSerializer : KSerializer<GeoPoint> {
 
     override val descriptor = buildClassSerialDescriptor(
         "GeoPoint"
