@@ -63,7 +63,11 @@ class CloudDecoder(
             val entity = element.get()
             return CloudDecoder(entity, null, entity.names.size, elementName, false)
         }
-        throw IllegalStateException("Unknown element type")
+        if (element is NullValue) {
+            // Trying to decode a NullValue as a structure is not valid, this happens when trying to decode a null value to a non-nullable type.
+            throw SerializationException("Cannot decode NullValue as a non-null structure. Element name: $elementName")
+        }
+        throw IllegalStateException("Unknown element type: ${element::class.simpleName}. Name: $elementName")
     }
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
