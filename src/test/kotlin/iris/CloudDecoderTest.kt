@@ -1,6 +1,11 @@
 package iris
 
 import com.google.cloud.datastore.Entity
+import com.google.cloud.datastore.Key
+import com.google.cloud.datastore.KeyValue
+import com.google.cloud.datastore.ListValue
+import com.google.cloud.datastore.NullValue
+import com.google.cloud.datastore.StringValue
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.equals.shouldBeEqual
@@ -86,6 +91,10 @@ class CloudDecoderTest : FunSpec({
             val decoded = decodeFromEntity<DifferentOrderedKeys>(entity)
             decoded shouldBeEqualToComparingFields DifferentOrderedKeys("test", 1)
         }
+        test("missing key should not throw exception") {
+            val entity = ProdExample1.matchingEntity
+            decodeFromEntity<ProdExample1>(entity)
+        }
     }
 })
 
@@ -104,3 +113,15 @@ data class SingleString(val astring: String)
 @StrictDeserialization
 @Serializable
 data class SingleStringStrict(val astring: String)
+
+@Serializable
+data class ProdExample1(
+    val missing: Double = 1.0,
+    val existing: String
+) {
+    companion object {
+        val matchingEntity = Entity.newBuilder(Key.newBuilder("project", "entity", "id1").build())
+            .set("existing", StringValue.of("existingValue"))
+            .build()
+    }
+}

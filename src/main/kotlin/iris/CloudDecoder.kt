@@ -34,7 +34,7 @@ class CloudDecoder(
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         if (isRoot) {
             // For the root decoder we need to deserialize each element of the entity
-            var totalElementsToDeserialize = entity!!.names.size
+            var totalElementsToDeserialize = entity!!.names.size.coerceAtLeast(descriptor.elementsCount)
             if ((0 until descriptor.elementsCount).any { i ->
                     descriptor.getElementAnnotations(i).any { annotation -> annotation is CloudKey }
                 }) {
