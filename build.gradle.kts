@@ -1,7 +1,7 @@
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    id("com.vanniktech.maven.publish") version "0.32.0"
+    id("com.vanniktech.maven.publish") version "0.33.0"
     id("org.jetbrains.kotlin.jvm") version "2.1.21"
     kotlin("plugin.serialization") version "2.1.21"
     `java-library`
@@ -39,7 +39,7 @@ object Meta {
     const val githubRepo = "vexdev/kotlin-datastore-serializer"
 }
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.DEFAULT)
+    publishToMavenCentral()
     signAllPublications()
 
     coordinates(
