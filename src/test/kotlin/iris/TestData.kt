@@ -77,14 +77,10 @@ data class BooleanMockWithLongKey(
 
 @Serializable
 data class ContainsLatLng(
-    @Serializable(with = LatLngSerializer::class)
-    val value: LatLng,
-    @Serializable(with = LatLngSerializer::class)
-    val nullable: LatLng?,
-    @Serializable(with = LatLngSerializer::class)
-    val nullableFilled: LatLng?,
-    @Serializable(with = LatLngSerializer::class)
-    val nullableWithDefault: LatLng = LatLng.of(6.0, 7.0)
+    val value: IrisLatLng,
+    val nullable: IrisLatLng?,
+    val nullableFilled: IrisLatLng?,
+    val nullableWithDefault: IrisLatLng = LatLng.of(6.0, 7.0)
 ) {
     companion object {
         val CONTAINS_GEOPOINT =
@@ -112,16 +108,14 @@ data class MapMock(
 
 @Serializable
 data class NestedKey(
-    @Serializable(with = KeySerializer::class)
-    val key: Key
+    val key: IrisKey
 )
 
 @Serializable
 data class KeyRefMock(
     @CloudKey
     val id: String,
-    @Serializable(with = KeySerializer::class)
-    val remoteId: Key,
+    val remoteId: IrisKey,
     val nestedKey: NestedKey
 ) {
     companion object {
@@ -174,10 +168,9 @@ data class ComplexMock(
     val nullableStringArray: Array<String?>,
     val stringSet: Set<String>,
     val nullableStringSet: Set<String?>,
-    @Serializable(with = LatLngSerializer::class)
-    val geoPoint: LatLng,
-    @Serializable(with = InstantSerializer::class)
-    val timestamp: Instant,
+    val geoPoint: IrisLatLng,
+    val timestamp: IrisInstant,
+    val listOfInstant: List<IrisInstant>,
 ) {
     companion object {
         val COMPLEX_MOCK = ComplexMock(
@@ -212,7 +205,11 @@ data class ComplexMock(
             stringSet = setOf("a"),
             nullableStringSet = setOf("a", null),
             geoPoint = LatLng.of(1.0, 2.0),
-            timestamp = Instant.fromEpochSeconds(123456, 0) // Example timestamp
+            timestamp = Instant.fromEpochSeconds(123456, 0),
+            listOfInstant = listOf(
+                Instant.fromEpochSeconds(123456, 0),
+                Instant.fromEpochSeconds(123457, 0)
+            )
         )
         val COMPLEX_MOCK_ENTITY: FullEntity.Builder<IncompleteKey> = Entity.newBuilder()
             .set("booleanValue", true)
@@ -247,6 +244,13 @@ data class ComplexMock(
             .set("nullableStringSet", listOf(StringValue("a"), NullValue()))
             .set("geoPoint", LatLngValue.of(LatLng.of(1.0, 2.0)))
             .set("timestamp", TimestampValue.of(Timestamp.ofTimeMicroseconds(123456000000)))
+            .set(
+                "listOfInstant",
+                ListValue(
+                    TimestampValue.of(Timestamp.ofTimeMicroseconds(123456000000)),
+                    TimestampValue.of(Timestamp.ofTimeMicroseconds(123457000000))
+                )
+            )
     }
 }
 

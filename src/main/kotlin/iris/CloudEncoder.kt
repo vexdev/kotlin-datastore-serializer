@@ -90,7 +90,7 @@ class CloudEncoder : AbstractEncoder() {
         return super.encodeElement(descriptor, index)
     }
 
-    private fun encodeValue(value: Value<*>) {
+    internal fun encodeValue(value: Value<*>) {
         if (cloudKey) {
             if (keyId == null && keyName == null) {
                 invalidCloudKey()
@@ -157,38 +157,6 @@ class CloudEncoder : AbstractEncoder() {
 
     override fun encodeValue(value: Any) {
         throw NotImplementedError("encodeValue is not implemented as it is not used in serialization")
-    }
-
-    internal fun encodeLatLng(value: LatLng) {
-        val env = requireSerializableEnvironment()
-        env.entityBuilder.set(
-            elementName,
-            LatLngValue.of(LatLng.of(value.latitude, value.longitude))
-        )
-    }
-
-    @OptIn(ExperimentalTime::class)
-    internal fun encodeInstant(value: Instant) {
-        val env = requireSerializableEnvironment()
-        env.entityBuilder.set(
-            elementName,
-            TimestampValue.of(Timestamp.ofTimeSecondsAndNanos(value.epochSeconds, value.nanosecondsOfSecond))
-        )
-    }
-
-    fun encodeKey(value: Key) {
-        val env = requireSerializableEnvironment()
-        env.entityBuilder.set(
-            elementName,
-            KeyValue.of(value)
-        )
-    }
-
-    private fun requireSerializableEnvironment(): SerializableEnvironment {
-        if (queue.isEmpty() || queue.last() !is SerializableEnvironment) {
-            throw IllegalStateException("SerializableEnvironment is required for this operation")
-        }
-        return queue.last() as SerializableEnvironment
     }
 
     private fun foundCloudKey() {

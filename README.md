@@ -50,42 +50,39 @@ The serializes maps the following types to Google Cloud Datastore types:
 - `Long` to `LongValue`
 - `Short` to `LongValue`
 - `String` to `StringValue`
-- `Instant` to `TimestampValue` (When using InstantSerializer)
-- `iris.GeoPoint` to `LatLngValue`
+- `Instant` to `TimestampValue` (When using IrisInstant)
+- `LatLng` to `LatLngValue` (When using IrisLatLng)
+- `Key` to `KeyValue` (When using IrisKey)
 - `Map<String, Any>` to `ArrayValue` (With the standard kotlin serialization)
 - `List<Serializable>` to `ArrayValue`
 - `Serializable` data classes to `EntityValue`
-- `Key` to `KeyValue` (When using KeySerializer)
 
 ### Special types
 
 #### Instant
-To use `Instant` with the serializer, you need to explicitly use the `InstantSerializer` from `iris`:
+To use `Instant` with the serializer, you need to use the typealias `IrisInstant` from `iris`:
 
 ```kotlin
 data class MyDataClass(
-    @Serializable(with = InstantSerializer::class)
-    val timestamp: Instant
+    val timestamp: IrisInstant
 )
 ``` 
 
 #### Key
-To use `Key` with the serializer, you need to explicitly use the `KeySerializer` from `iris`:
+To use `Key` with the serializer, you need to use the typealias `IrisKey` from `iris`:
 
 ```kotlin
 data class MyDataClass(
-    @Serializable(with = KeySerializer::class)
-    val key: Key
+    val key: IrisKey
 )
 ```
 
 #### LatLng
-To use `LatLng` with the serializer, you need to explicitly use the `LatLngSerializer` from `iris`:
+To use `LatLng` with the serializer, you need to user the typealias `IrisLatLng` from `iris`:
 
 ```kotlin
 data class MyDataClass(
-    @Serializable(with = LatLngSerializer::class)
-    val location: LatLng
+    val location: IrisLatLng
 )
 ```
 
@@ -113,17 +110,17 @@ data class MyDataClass(
 )
 ```
 
-note: this differs from using the `Key` class with the `KeySerializer` from `iris`, because this annotation is used
-to define the key of the entity in the data class, while the `KeySerializer` is used to serialize and deserialize
+note: this differs from using the `IrisKey` class, because this annotation is used
+to define the key of the entity in the data class, while the `IrisKey` is used to serialize and deserialize
 properties of type `Key`.
 
-Example of an entity with both `@CloudKey` and `KeySerializer`:
+Example of an entity with both `@CloudKey` and `IrisKey`:
 
 ```kotlin
 @Serializable
 data class MyDataClass(
     @CloudKey val id: String, // This is the entity key
-    @Serializable(with = KeySerializer::class) val key: Key, // Reference to another entity
+    val key: IrisKey, // Reference to another entity
     val value: String
 )
 ```

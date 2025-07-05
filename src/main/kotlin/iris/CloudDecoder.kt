@@ -98,7 +98,7 @@ class CloudDecoder(
         return elementIndex++
     }
 
-    private fun getValue(): Value<*> {
+    internal fun getValue(): Value<*> {
         if (visitingKey) {
             visitingKey = false
             if (entity !is Entity) throw IllegalStateException("Must use a Entity (Not a FullEntity) to extract key")
@@ -137,34 +137,6 @@ class CloudDecoder(
     override fun decodeShort(): Short = (getValue() as LongValue).get().toShort()
 
     override fun decodeString(): String = (getValue() as StringValue).get()
-
-    internal fun decodeLatLng(): LatLng {
-        val entity = requireEntity()
-        val value = entity.getValue<LatLngValue>(elementName)
-        return value.get().let {
-            LatLng.of(it.latitude, it.longitude)
-        }
-    }
-
-    @OptIn(ExperimentalTime::class)
-    internal fun decodeInstant(): Instant {
-        val entity = requireEntity()
-        val value = entity.getValue<TimestampValue>(elementName).get()
-        return Instant.fromEpochSeconds(value.seconds, max(value.nanos, 0))
-    }
-
-    fun decodeKey(): Key {
-        val entity = requireEntity()
-        val value = entity.getValue<KeyValue>(elementName).get()
-        return value
-    }
-
-    private fun requireEntity(): FullEntity<*> {
-        if (entity == null) {
-            throw SerializationException("InstantSerializer can only be used with CloudDecoder that has an entity")
-        }
-        return entity
-    }
 
 }
 
