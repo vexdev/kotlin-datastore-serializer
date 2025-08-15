@@ -1,6 +1,6 @@
 plugins {
     id("com.vanniktech.maven.publish") version "0.33.0"
-    id("org.jetbrains.kotlin.jvm") version "2.1.21"
+    id("org.jetbrains.kotlin.jvm") version "2.2.10"
     kotlin("plugin.serialization") version "2.1.21"
     `java-library`
 }
