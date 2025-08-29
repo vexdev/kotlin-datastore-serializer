@@ -13,7 +13,7 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-    implementation(platform("com.google.cloud:libraries-bom:26.62.0"))
+    implementation(platform("com.google.cloud:libraries-bom:26.67.0"))
     implementation("com.google.cloud:google-cloud-datastore")
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
